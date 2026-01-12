@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Masjid Al-Muttaqin - 8 Slides Pro</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#022c22',   /* Deep Emerald */
+                        'accent': '#fbbf24',    /* Luxury Gold */
+                        'glass-dark': 'rgba(0, 0, 0, 0.4)',
+                    },
+                    fontFamily: {
+                        'sans': ['Plus Jakarta Sans', 'sans-serif'],
+                        'arab': ['Amiri', 'serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 3. CSS CUSTOM & VISUAL EFFECTS */
+        body {
+            background-color: #020617;
+            /* Background Premium */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(251, 191, 36, 0.1) 0px, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Slider Logic */
+        .slide-wrapper { position: relative; width: 100%; height: 100%; }
+        .slide-item {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0; pointer-events: none;
+        }
+        .slide-item.active { opacity: 1; z-index: 10; pointer-events: auto; }
+
+        /* Running Text */
+        .marquee-container { overflow: hidden; white-space: nowrap; mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent); }
+        .marquee-content { display: inline-block; padding-left: 100%; animation: marquee 45s linear infinite; will-change: transform; }
+        @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* Prayer Card */
+        .prayer-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid transparent;
+            transition: all 0.4s ease;
+        }
+        .prayer-card.active {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, transparent 100%);
+            border-left: 3px solid #fbbf24;
+            padding-left: 1.5rem;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col selection:bg-accent selection:text-primary">
+
+    <div id="start-overlay" onclick="startSystem()" class="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-500">
+        <div class="bg-white/10 p-8 rounded-full mb-6 animate-pulse border border-white/20">
+            <i class="fas fa-play text-6xl text-accent pl-2"></i>
+        </div>
+        <h1 class="text-4xl font-bold text-white mb-2">Masjid Al-Muttaqin</h1>
+        <p class="text-gray-400 text-lg">Sentuh layar untuk memulai</p>
+    </div>
+
+    <header class="h-[13vh] flex justify-between items-center px-8 pt-4 z-20 relative">
+        <div class="flex items-center gap-6">
+            <div class="h-20 w-20 bg-gradient-to-br from-accent to-yellow-700 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,0.2)]">
+                <i class="fas fa-mosque text-4xl text-primary drop-shadow-md"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-extrabold uppercase tracking-tight text-white drop-shadow-lg">Masjid Al-Muttaqin</h1>
+                <div class="flex items-center gap-3 text-gray-300 mt-1">
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-xs border border-white/10 text-accent font-bold tracking-widest">KAMPUNG AMBON</span>
+                    <span class="text-sm border-l border-white/20 pl-3"><i class="fas fa-map-marker-alt mr-1 text-red-400"></i> Manokwari</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex flex-col items-end pr-6 border-r border-white/10">
+                <div class="flex items-center gap-2">
+                    <i id="weather-icon" class="fas fa-cloud text-2xl text-gray-400"></i>
+                    <span id="weather-temp" class="text-2xl font-bold text-white">--°C</span>
+                </div>
+                <span id="weather-desc" class="text-xs text-gray-400 capitalize mt-1">Memuat...</span>
+            </div>
+
+            <div class="text-right">
+                <div id="digital-clock" class="text-6xl font-black font-mono tracking-tighter text-white leading-none drop-shadow-2xl">00:00</div>
+                <div class="flex items-center justify-end gap-3 mt-2 text-sm font-semibold bg-black/30 backdrop-blur-sm py-1 px-4 rounded-full border border-white/10">
+                    <span id="date-gregorian" class="text-gray-300">...</span>
+                    <span class="text-accent">•</span>
+                    <span id="date-hijri" class="text-accent font-arab text-base">...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 px-8 py-5 flex gap-6 h-[77vh]">
+        
+        <section class="flex-[2.5] glass-panel rounded-3xl overflow-hidden relative group">
+            <div id="slider-container" class="slide-wrapper bg-black/40">
+                </div>
+            <div class="absolute bottom-0 left-0 w-full h-1.5 bg-white/5 z-20">
+                <div id="slide-progress" class="h-full bg-accent shadow-[0_0_15px_#fbbf24] w-0"></div>
+            </div>
+        </section>
+
+        <section class="flex-1 flex flex-col gap-4 min-w-[350px]">
+            <div class="glass-panel rounded-2xl p-5 relative overflow-hidden flex items-center justify-between border-t-2 border-accent/50 shadow-lg">
+                <div class="z-10">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-1">WAKTU MENUJU</p>
+                    <h2 id="next-prayer-name" class="text-3xl font-bold text-accent animate-pulse">--</h2>
+                </div>
+                <div class="flex items-center gap-3 z-10">
+                    <div id="countdown-text" class="text-4xl font-mono font-bold tracking-tight text-white">--:--</div>
+                    <div class="relative h-14 w-14">
+                         <svg class="h-full w-full transform -rotate-90">
+                            <circle class="text-white/10" stroke-width="5" stroke="currentColor" fill="transparent" r="24" cx="28" cy="28"/>
+                            <circle id="countdown-ring" class="text-accent transition-[stroke-dashoffset] duration-500" stroke-width="5" stroke="currentColor" fill="transparent" r="24" cx="28" cy="28" stroke-dasharray="150" stroke-dashoffset="0"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="absolute right-0 top-0 h-full w-40 bg-gradient-to-l from-accent/10 to-transparent"></div>
+            </div>
+
+            <div id="prayer-list" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-2">
+                </div>
+        </section>
+    </main>
+
+    <footer class="h-[10vh] bg-gradient-to-r from-black via-[#0f2e2a] to-black border-t border-white/10 flex items-center relative z-30 shadow-2xl">
+        <div class="bg-accent text-primary h-full px-10 flex items-center justify-center font-black text-xl gap-3 z-20 shadow-[0_0_30px_rgba(251,191,36,0.3)] clip-path-slant">
+            <i class="fas fa-bullhorn text-2xl animate-pulse"></i>
+            <span>INFO</span>
+        </div>
+        <div class="marquee-container flex-1 h-full flex items-center">
+            <div id="running-text" class="marquee-content text-2xl font-medium text-gray-100 tracking-wide drop-shadow-md">
+                </div>
+        </div>
+    </footer>
+
+    <div id="overlay-fullscreen" class="fixed inset-0 bg-black z-[90] hidden flex flex-col items-center justify-center text-center transition-opacity duration-700">
+        <div id="view-iqomah" class="hidden w-full h-full flex flex-col items-center justify-center relative bg-primary overflow-hidden">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] animate-pulse-slow"></div>
+            <p class="text-accent text-3xl uppercase tracking-[0.4em] mb-4 font-bold relative z-10">Luruskan Shaf</p>
+            <h1 class="text-white text-[9rem] font-bold leading-none mb-10 drop-shadow-[0_0_40px_rgba(251,191,36,0.4)] relative z-10">IQOMAH</h1>
+            <div class="text-[12rem] font-mono font-bold text-white leading-none tracking-wider relative z-10" id="iqomah-counter">00:00</div>
+            <div class="flex items-center gap-6 bg-red-900/40 px-10 py-5 rounded-full border border-red-500/40 animate-pulse relative z-10 backdrop-blur-md mt-10">
+                <i class="fas fa-mobile-slash text-5xl text-red-500"></i>
+                <div class="text-left">
+                    <p class="text-red-400 font-bold text-2xl uppercase">Matikan HP</p>
+                    <p class="text-gray-400 text-sm">Demi kekhusyukan sholat</p>
+                </div>
+            </div>
+        </div>
+        <div id="view-sholat" class="hidden w-full h-full bg-black flex flex-col items-center justify-center">
+            <div class="text-gray-800 font-bold text-xl mb-4 tracking-widest">AL-MUTTAQIN MANOKWARI</div>
+            <div id="clock-sholat" class="text-4xl font-mono text-gray-900 font-bold">00:00</div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            city: "Manokwari", lat: -0.861, long: 134.062,
+            iqomahTime: 10, sholatTime: 10, slideDuration: 15000, refreshHour: 2,
+            runningText: "Selamat Datang di Masjid Al-Muttaqin Kampung Ambon - Manokwari. Mohon luruskan shaf. Matikan alat komunikasi saat sholat. Parkir kendaraan dengan rapi."
+        };
+
+        // --- 8 KONTEN SLIDE UTAMA ---
+        const SLIDES_CONTENT = [
+            {
+                id: 'makkah', // Slide 1 (OFFLINE MODE)
+                html: `
+                <div class="w-full h-full relative bg-black">
+                    <video 
+                        class="w-full h-full object-cover opacity-90" 
+                        autoplay 
+                        muted 
+                        loop 
+                        playsinline>
+                        <source src="makkah.mp4" type="video/mp4">
+                        </video>
+                    
+                    <div class="absolute top-8 left-8 bg-red-600/90 text-white px-5 py-2 rounded-full font-bold flex items-center shadow-lg animate-pulse z-10 backdrop-blur-sm">
+                        <span class="w-3 h-3 bg-white rounded-full mr-3 animate-ping"></span> LIVE
+                    </div>
+                </div>`
+            },
+            {
+                id: 'petugas', // Slide 2
+                html: `
+                <div class="w-full h-full flex flex-col justify-center px-16 bg-gradient-to-br from-primary via-black to-primary">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-6 mb-8">
+                        <div><span class="bg-accent/20 text-accent border border-accent/20 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2 inline-block">Jumat Minggu Ini</span><h2 class="text-5xl font-bold text-white">Petugas Sholat Jumat</h2></div>
+                        <i class="fas fa-users-rays text-6xl text-white/5"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 text-center group">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-800 rounded-full mx-auto flex items-center justify-center text-2xl text-white mb-3 shadow-lg"><i class="fas fa-user-graduate"></i></div>
+                            <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">KHATIB</h3><p class="text-xl font-bold text-white font-serif">KH. Kasim Syamsuddin, Lc.</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 text-center group">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-800 rounded-full mx-auto flex items-center justify-center text-2xl text-white mb-3 shadow-lg"><i class="fas fa-microphone-alt"></i></div>
+                            <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">IMAM</h3><p class="text-xl font-bold text-white font-serif">KH. Kusdiyanto Binseri</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 text-center group">
+                            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-800 rounded-full mx-auto flex items-center justify-center text-2xl text-white mb-3 shadow-lg"><i class="fas fa-music"></i></div>
+                            <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">MUAZZIN</h3><p class="text-xl font-bold text-white font-serif">Amrozi</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                id: 'kajian', // Slide 3
+                html: `
+                <div class="w-full h-full flex items-center justify-center px-16 bg-gradient-to-tr from-primary via-black to-[#0f2e2a]">
+                    <div class="w-1/3 flex justify-center animate-float">
+                        <div class="relative w-56 h-72 bg-gradient-to-b from-accent to-yellow-700 rounded-2xl shadow-[0_0_50px_rgba(251,191,36,0.2)] flex flex-col items-center justify-center border border-white/20 transform rotate-[-6deg]">
+                            <i class="fas fa-book-quran text-7xl text-primary mb-4 drop-shadow-md"></i>
+                            <div class="text-primary font-bold text-xl uppercase tracking-widest">Kajian</div>
+                        </div>
+                    </div>
+                    <div class="w-2/3 pl-10">
+                        <div class="inline-block bg-white/10 border border-accent/30 rounded-full px-5 py-1.5 mb-6 backdrop-blur-md"><span class="text-accent font-bold uppercase tracking-[0.2em] text-sm"><i class="fas fa-calendar-check mr-2"></i>Agenda Minggu Ini</span></div>
+                        <h1 class="text-5xl font-bold text-white mb-4 leading-tight">Tafsir <span class="text-accent">Jalalain</span></h1>
+                        <div class="space-y-4 mt-6">
+                            <div class="flex items-center gap-5"><div><p class="text-gray-400 text-sm uppercase">Pemateri</p><p class="text-xl text-white font-bold">Ustadz Abdullah, M.Ag</p></div></div>
+                            <div class="flex items-center gap-5"><div><p class="text-gray-400 text-sm uppercase">Waktu</p><p class="text-xl text-white font-bold">Ahad, Ba'da Maghrib - Selesai</p></div></div>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                id: 'finance', // Slide 4
+                html: `
+                <div class="w-full h-full flex flex-col justify-center px-16 bg-gradient-to-t from-black to-primary">
+                    <div class="flex items-center gap-6 mb-8 border-b border-white/10 pb-6">
+                        <div class="bg-accent p-3 rounded-2xl text-primary"><i class="fas fa-wallet text-3xl"></i></div>
+                        <div><h2 class="text-3xl font-bold text-white">Laporan Kas</h2><p class="text-gray-400">Periode: Minggu Ini</p></div>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl">
+                        <div class="p-5 flex justify-between items-center border-b border-white/5">
+                            <span class="text-lg text-gray-300 pl-4">Saldo Awal</span><span class="text-xl font-mono font-bold text-blue-400 pr-4">Rp 12.000.000</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-center border-b border-white/5">
+                            <div class="flex items-center gap-3 text-green-500 pl-4"><i class="fas fa-arrow-down p-1.5 bg-green-500/10 rounded-full text-xs"></i><span class="text-lg text-gray-300">Pemasukan</span></div>
+                            <span class="text-xl font-mono font-bold text-green-400 pr-4">+ Rp 3.500.000</span>
+                        </div>
+                        <div class="p-5 flex justify-between items-center border-b border-white/5">
+                            <div class="flex items-center gap-3 text-red-500 pl-4"><i class="fas fa-arrow-up p-1.5 bg-red-500/10 rounded-full text-xs"></i><span class="text-lg text-gray-300">Pengeluaran</span></div>
+                            <span class="text-xl font-mono font-bold text-red-400 pr-4">- Rp 1.000.000</span>
+                        </div>
+                        <div class="bg-accent/10 p-5 flex justify-between items-center">
+                            <span class="text-xl font-bold text-accent pl-4">SALDO AKHIR</span><span class="text-3xl font-mono font-black text-white pr-4">Rp 14.500.000</span>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                id: 'qris', // Slide 5
+                html: `
+                <div class="w-full h-full flex items-center justify-center gap-12 px-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-fixed">
+                    <div class="bg-white p-4 rounded-3xl shadow-2xl"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" class="w-[300px] h-[300px] object-contain" alt="QRIS"></div>
+                    <div class="max-w-lg text-left">
+                        <h2 class="text-5xl font-bold text-white mb-4">Infaq Digital</h2>
+                        <p class="text-lg text-gray-300 mb-6 font-light">Scan QR Code untuk bersedekah.</p>
+                        <div class="bg-white/5 border-l-4 border-accent p-4 rounded-r-xl">
+                            <p class="text-accent font-bold text-xs tracking-widest uppercase mb-1">REKENING BSI</p>
+                            <p class="text-3xl font-mono font-bold text-white tracking-wide">7123-4567-89</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                id: 'adab', // Slide 6 (BARU)
+                html: `
+                <div class="w-full h-full flex flex-col justify-center items-center px-12 bg-primary">
+                    <h2 class="text-4xl font-bold text-white mb-10 uppercase tracking-[0.2em] border-b-2 border-accent pb-4">Adab Di Masjid</h2>
+                    <div class="grid grid-cols-3 gap-8 w-full max-w-5xl">
+                        <div class="bg-white/5 p-6 rounded-2xl text-center border border-white/10">
+                            <i class="fas fa-shoe-prints text-5xl text-accent mb-4"></i>
+                            <h3 class="text-xl font-bold text-white">Dahulukan Kaki Kanan</h3>
+                            <p class="text-gray-400 text-sm mt-2">Saat memasuki masjid</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-2xl text-center border border-white/10">
+                            <i class="fas fa-volume-xmark text-5xl text-red-400 mb-4"></i>
+                            <h3 class="text-xl font-bold text-white">Jaga Ketenangan</h3>
+                            <p class="text-gray-400 text-sm mt-2">Tidak berbicara keras</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-2xl text-center border border-white/10">
+                            <i class="fas fa-person-praying text-5xl text-green-400 mb-4"></i>
+                            <h3 class="text-xl font-bold text-white">Sholat Tahiyatul Masjid</h3>
+                            <p class="text-gray-400 text-sm mt-2">Sebelum duduk</p>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                id: 'hadits', // Slide 7 (BARU)
+                html: `
+                <div class="w-full h-full flex flex-col justify-center items-center px-20 text-center relative">
+                    <i class="fas fa-quote-left text-6xl text-white/10 absolute top-20 left-20"></i>
+                    <i class="fas fa-quote-right text-6xl text-white/10 absolute bottom-20 right-20"></i>
+                    <h3 class="text-accent font-bold uppercase tracking-widest mb-6">Mutiara Hadits</h3>
+                    <p class="text-4xl font-arab leading-loose text-white mb-8">"Barangsiapa yang membangun masjid karena Allah, maka Allah akan membangunkan baginya semisal itu di surga."</p>
+                    <div class="bg-white/10 px-6 py-2 rounded-full text-white font-bold border border-white/20">HR. Bukhari & Muslim</div>
+                </div>`
+            },
+            {
+                id: 'update', // Slide 8 (BARU)
+                html: `
+                <div class="w-full h-full flex items-center gap-10 px-12">
+                    <div class="w-1/2 h-80 bg-gray-700 rounded-2xl overflow-hidden border-2 border-white/10 relative">
+                        <img src="https://via.placeholder.com/800x600/0f2e2a/ffffff?text=FOTO+PEMBANGUNAN" class="w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 flex items-center justify-center text-white/20 text-4xl font-bold">FOTO KEGIATAN</div>
+                    </div>
+                    <div class="w-1/2">
+                        <span class="text-accent font-bold uppercase tracking-widest text-sm mb-2 block">Info Pembangunan</span>
+                        <h2 class="text-4xl font-bold text-white mb-4">Renovasi Tempat Wudhu</h2>
+                        <p class="text-gray-300 text-lg mb-6 leading-relaxed">Alhamdulillah, progres renovasi tempat wudhu ikhwan sudah mencapai 80%. Mohon doa restu agar segera selesai.</p>
+                        <div class="w-full bg-gray-700 rounded-full h-4 mb-2">
+                            <div class="bg-accent h-4 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <p class="text-right text-white font-mono">80% Selesai</p>
+                    </div>
+                </div>`
+            }
+        ];
+
+        // VARIABLES & DOM
+        let audioCtx, prayerTimes = {}, currentSlideIdx = 0;
+        const el = {
+            clock: document.getElementById('digital-clock'), dateG: document.getElementById('date-gregorian'), dateH: document.getElementById('date-hijri'),
+            weatherTemp: document.getElementById('weather-temp'), weatherDesc: document.getElementById('weather-desc'), weatherIcon: document.getElementById('weather-icon'),
+            sliderContainer: document.getElementById('slider-container'), slideProgress: document.getElementById('slide-progress'),
+            prayerList: document.getElementById('prayer-list'), nextPrayerName: document.getElementById('next-prayer-name'), countdownText: document.getElementById('countdown-text'), countdownRing: document.getElementById('countdown-ring'),
+            marquee: document.getElementById('running-text'),
+            overlays: { start: document.getElementById('start-overlay'), full: document.getElementById('overlay-fullscreen'), iqomah: document.getElementById('view-iqomah'), sholat: document.getElementById('view-sholat'), counter: document.getElementById('iqomah-counter'), clockSholat: document.getElementById('clock-sholat') }
+        };
+
+        // --- SYSTEM ENGINE ---
+        function startSystem() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(0.01);
+            document.documentElement.requestFullscreen().catch((e)=>{});
+            el.overlays.start.style.opacity = '0';
+            setTimeout(() => el.overlays.start.style.display = 'none', 500);
+            initApp();
+        }
+
+        function playBeep() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            el.clock.innerText = now.toLocaleTimeString('en-GB', {hour12: false, hour:'2-digit', minute:'2-digit'});
+            el.overlays.clockSholat.innerText = el.clock.innerText;
+            el.dateG.innerText = now.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+            el.dateH.innerText = new Intl.DateTimeFormat('id-ID-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now).replace('Tahun', 'H');
+            if(now.getHours() === CONFIG.refreshHour && now.getMinutes() === 0 && now.getSeconds() === 0) window.location.reload();
+        }
+
+        async function fetchWeather() {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.long}&current_weather=true`);
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+                el.weatherTemp.innerText = `${temp}°C`;
+                let icon='fa-cloud', desc='Berawan';
+                if(code<3) {icon='fa-sun'; desc='Cerah';} else if(code>50) {icon='fa-cloud-rain'; desc='Hujan';}
+                el.weatherIcon.className = `fas ${icon} text-2xl text-accent`;
+                el.weatherDesc.innerText = desc;
+            } catch(e) {}
+        }
+
+        async function fetchPrayers() {
+            const todayKey = new Date().toDateString();
+            const cached = localStorage.getItem('prayers_cache');
+            if(cached) {
+                const parsed = JSON.parse(cached);
+                if(parsed.date === todayKey) { prayerTimes = parsed.data; renderPrayerList(); return; }
+            }
+            try {
+                const now = new Date();
+                const res = await fetch(`https://api.aladhan.com/v1/timings/${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}?latitude=${CONFIG.lat}&longitude=${CONFIG.long}&method=20`);
+                const data = await res.json();
+                const timings = data.data.timings;
+                prayerTimes = { 'Subuh': timings.Fajr, 'Terbit': timings.Sunrise, 'Dzuhur': timings.Dhuhr, 'Ashar': timings.Asr, 'Maghrib': timings.Maghrib, 'Isya': timings.Isha };
+                localStorage.setItem('prayers_cache', JSON.stringify({ date: todayKey, data: prayerTimes }));
+                renderPrayerList();
+            } catch (err) {}
+        }
+
+        function renderPrayerList() {
+            el.prayerList.innerHTML = '';
+            for(const [name, time] of Object.entries(prayerTimes)) {
+                const isPassive = name === 'Terbit';
+                const div = document.createElement('div');
+                div.className = `prayer-card rounded-xl px-4 py-3 flex justify-between items-center ${isPassive ? 'opacity-50' : ''}`;
+                div.id = `pray-${name}`;
+                div.innerHTML = `<span class="text-lg font-semibold text-gray-300 uppercase tracking-wider">${name}</span><span class="text-2xl font-mono font-bold text-white prayer-time">${time}</span>`;
+                el.prayerList.appendChild(div);
+            }
+        }
+
+        function checkTime() {
+            if(!Object.keys(prayerTimes).length) return;
+            const now = new Date();
+            const curMin = now.getHours() * 60 + now.getMinutes();
+            const curSec = now.getSeconds();
+            let next = null, minDiff = 9999;
+            for(const [name, time] of Object.entries(prayerTimes)) {
+                if(name === 'Terbit') continue;
+                const [h,m] = time.split(':').map(Number);
+                const pMin = h*60+m;
+                let diff = pMin - curMin;
+                if(diff === 0 && curSec === 0) startIqomah();
+                if(diff < 0) diff += 1440;
+                if(diff < minDiff) { minDiff = diff; next = name; }
+            }
+            document.querySelectorAll('.prayer-card').forEach(c => c.classList.remove('active'));
+            if(next) {
+                document.getElementById(`pray-${next}`)?.classList.add('active');
+                el.nextPrayerName.innerText = next;
+                const [h,m] = prayerTimes[next].split(':').map(Number);
+                const target = new Date(); target.setHours(h, m, 0);
+                if(target < now) target.setDate(target.getDate()+1);
+                const ms = target - now;
+                const hh = Math.floor(ms/3600000), mm = Math.floor((ms%3600000)/60000);
+                el.countdownText.innerText = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+                const totSec = (hh*3600)+(mm*60);
+                const pct = totSec > 7200 ? 1 : totSec/7200;
+                el.countdownRing.style.strokeDashoffset = 150 - (150 * (1-pct));
+            }
+        }
+
+        function startIqomah() {
+            playBeep();
+            el.overlays.full.classList.remove('hidden'); el.overlays.iqomah.classList.remove('hidden');
+            let timeLeft = CONFIG.iqomahTime * 60;
+            const timer = setInterval(() => {
+                const m = Math.floor(timeLeft/60), s = timeLeft%60;
+                el.overlays.counter.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if(timeLeft <= 3 && timeLeft > 0) playBeep();
+                if(timeLeft <= 0) { clearInterval(timer); playBeep(); enterSholat(); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function enterSholat() {
+            el.overlays.iqomah.classList.add('hidden'); el.overlays.sholat.classList.remove('hidden');
+            setTimeout(() => {
+                el.overlays.full.classList.add('hidden'); el.overlays.sholat.classList.add('hidden'); fetchPrayers();
+            }, CONFIG.sholatTime * 60 * 1000);
+        }
+
+        function initSlider() {
+            el.sliderContainer.innerHTML = '';
+            SLIDES_CONTENT.forEach((s, i) => {
+                const div = document.createElement('div');
+                div.className = `slide-item ${i===0 ? 'active':''}`;
+                div.innerHTML = s.html;
+                el.sliderContainer.appendChild(div);
+            });
+            setInterval(() => {
+                const items = document.querySelectorAll('.slide-item');
+                items[currentSlideIdx].classList.remove('active');
+                currentSlideIdx = (currentSlideIdx + 1) % items.length;
+                items[currentSlideIdx].classList.add('active');
+                el.slideProgress.style.transition = 'none'; el.slideProgress.style.width = '0%';
+                void el.slideProgress.offsetWidth;
+                el.slideProgress.style.transition = `width ${CONFIG.slideDuration}ms linear`; el.slideProgress.style.width = '100%';
+            }, CONFIG.slideDuration);
+            setTimeout(() => { el.slideProgress.style.transition = `width ${CONFIG.slideDuration}ms linear`; el.slideProgress.style.width = '100%'; }, 100);
+        }
+
+        function initApp() {
+            el.marquee.innerText = CONFIG.runningText;
+            updateClock(); setInterval(updateClock, 1000);
+            fetchWeather(); fetchPrayers(); setInterval(checkTime, 1000);
+            initSlider();
+        }
+    </script>
+</body>
+</html>
